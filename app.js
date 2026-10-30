@@ -16,7 +16,10 @@ const app = express();
 app.use(express.json());
 
 // Documentación Swagger
-const documentacion = YAML.load('./swagger.yaml');
+const path = require('path');
+
+// Documentación Swagger con ruta absoluta
+const documentacion = YAML.load(path.join(__dirname, 'swagger.yaml'));
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(documentacion));
 
 // Ruta pública de Auth
