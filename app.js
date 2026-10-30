@@ -35,8 +35,8 @@ app.use('/api/prestamos', autenticar, rutasPrestamos); // Ruta 1 protegida con J
 // Middleware central de errores (SIEMPRE debe ir al final de las rutas)
 app.use(manejadorErrores);
 
-const puerto = process.env.PUERTO || 3000;
-app.listen(puerto, () => {
+const puerto = process.env.PORT || process.env.PUERTO || 3000;
+app.listen(puerto, '0.0.0.0', () => {
     console.log(`Servidor en http://localhost:${puerto}`);
     console.log(`Documentación Swagger disponible en http://localhost:${puerto}/api-docs`);
 });
