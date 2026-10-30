@@ -1,0 +1,76 @@
+openapi: 3.0.0
+info:
+  title: API Biblioteca
+  description: Documentación oficial de la API de gestión de biblioteca
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000/api
+    description: Servidor Local
+
+paths:
+  /login:
+    post:
+      summary: Iniciar sesión
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                correo:
+                  type: string
+                  example: admin@biblioteca.com
+                clave:
+                  type: string
+                  example: "123456"
+      responses:
+        200:
+          description: Token generado exitosamente
+        401:
+          description: Credenciales inválidas
+
+  /autores:
+    get:
+      summary: Obtener lista de autores
+      responses:
+        200:
+          description: Lista de autores devuelta correctamente
+    post:
+      summary: Crear un autor
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+                  example: Gabriel García Márquez
+                nacionalidad:
+                  type: string
+                  example: Colombiana
+      responses:
+        201:
+          description: Autor creado correctamente
+        400:
+          description: Datos de entrada inválidos
+
+  /prestamos:
+    get:
+      summary: Obtener préstamos (Ruta protegida)
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Lista de préstamos
+        401:
+          description: No autorizado (Falta token)
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

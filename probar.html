@@ -1,0 +1,197 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Prueba API Biblioteca</title>
+</head>
+<body>
+    <h2>Pruebas de autores</h2>
+
+    <label>Nombre:</label>
+    <input type="text" id="nombre" value="Autor de prueba">
+    <br><br>
+
+    <label>Nacionalidad:</label>
+    <input type="text" id="nacionalidad" value="Colombiana">
+    <br><br>
+
+    <label>ID del autor:</label>
+    <input type="number" id="id" placeholder="ID para actualizar o eliminar">
+    <br><br>
+
+    <button onclick="registrar()">Registrar autor</button>
+    <button onclick="consultar()">Consultar autores</button>
+    <button onclick="actualizar()">Actualizar autor</button>
+    <button onclick="eliminar()">Eliminar autor</button>
+
+    <h3>Respuesta:</h3>
+    <pre id="respuesta"></pre>
+
+    <script>
+        const url = 'http://localhost:3000/api/autores';
+
+        async function enviar(direccion, metodo, datos = null) {
+            try {
+                const opciones = { method: metodo };
+
+                if (datos !== null) {
+                    opciones.headers = {
+                        'Content-Type': 'application/json'
+                    };
+                    opciones.body = JSON.stringify(datos);
+                }
+
+                const respuesta = await fetch(direccion, opciones);
+                const resultado = await respuesta.json();
+
+                document.getElementById('respuesta').textContent =
+                    'Estado: ' + respuesta.status + '\n' +
+                    JSON.stringify(resultado, null, 2);
+
+                return resultado;
+            } catch (error) {
+                document.getElementById('respuesta').textContent =
+                    'Error: ' + error.message;
+            }
+        }
+
+        function obtenerDatos() {
+            return {
+                nombre: document.getElementById('nombre').value,
+                nacionalidad: document.getElementById('nacionalidad').value
+            };
+        }
+
+        function registrar() {
+            enviar(url, 'POST', obtenerDatos());
+        }
+
+        function consultar() {
+            enviar(url, 'GET');
+        }
+
+        function actualizar() {
+            const id = document.getElementById('id').value;
+
+            if (!id) {
+                alert('Ingresa el ID del autor');
+                return;
+            }
+
+            enviar(url + '/' + id, 'PUT', obtenerDatos());
+        }
+
+        function eliminar() {
+            const id = document.getElementById('id').value;
+
+            if (!id) {
+                alert('Ingresa el ID del autor');
+                return;
+            }
+
+            if (confirm('¿Seguro que deseas eliminar este autor?')) {
+                enviar(url + '/' + id, 'DELETE');
+            }
+        }
+    </script>
+
+    
+<hr>
+
+<h2>Pruebas de libros</h2>
+
+<label>Título:</label>
+<input type="text" id="titulo" value="Libro de prueba">
+<br><br>
+
+<label>Año:</label>
+<input type="number" id="anio" value="2024">
+<br><br>
+
+<label>ID del autor:</label>
+<input type="number" id="autor_id" value="1">
+<br><br>
+
+<label>ID del libro:</label>
+<input type="number" id="id_libro">
+<br><br>
+
+<button onclick="registrarLibro()">Registrar libro</button>
+<button onclick="consultarLibros()">Consultar libros</button>
+<button onclick="actualizarLibro()">Actualizar libro</button>
+<button onclick="eliminarLibro()">Eliminar libro</button>
+
+<h3>Respuesta de libros:</h3>
+<pre id="respuestaLibros"></pre>
+
+<script>
+    const urlLibros = 'http://localhost:3000/api/libros';
+
+    async function enviarLibro(direccion, metodo, datos = null) {
+        try {
+            const opciones = { method: metodo };
+
+            if (datos !== null) {
+                opciones.headers = {
+                    'Content-Type': 'application/json'
+                };
+                opciones.body = JSON.stringify(datos);
+            }
+
+            const respuesta = await fetch(direccion, opciones);
+            const resultado = await respuesta.json();
+
+            document.getElementById('respuestaLibros').textContent =
+                'Estado: ' + respuesta.status + '\n' +
+                JSON.stringify(resultado, null, 2);
+
+        } catch (error) {
+            document.getElementById('respuestaLibros').textContent =
+                'Error: ' + error.message;
+        }
+    }
+
+    function datosLibro() {
+        return {
+            titulo: document.getElementById('titulo').value,
+            anio: Number(document.getElementById('anio').value) || null,
+            autor_id: Number(document.getElementById('autor_id').value)
+        };
+    }
+
+    function registrarLibro() {
+        enviarLibro(urlLibros, 'POST', datosLibro());
+    }
+
+    function consultarLibros() {
+        enviarLibro(urlLibros, 'GET');
+    }
+
+    function actualizarLibro() {
+        const id = document.getElementById('id_libro').value;
+
+        if (!id) {
+            alert('Ingresa el ID del libro');
+            return;
+        }
+
+        enviarLibro(urlLibros + '/' + id, 'PUT', datosLibro());
+    }
+
+    function eliminarLibro() {
+        const id = document.getElementById('id_libro').value;
+
+        if (!id) {
+            alert('Ingresa el ID del libro');
+            return;
+        }
+
+        if (confirm('¿Seguro que deseas eliminar este libro?')) {
+            enviarLibro(urlLibros + '/' + id, 'DELETE');
+        }
+    }
+</script>
+
+</body>
+</html>
