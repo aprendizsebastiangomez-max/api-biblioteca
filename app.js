@@ -2,6 +2,7 @@ require('dotenv').config();
 
 const express = require('express');
 const swaggerUi = require('swagger-ui-express');
+const fs = require('fs');
 const YAML = require('yamljs');
 const path = require('path');
 
@@ -16,13 +17,15 @@ const app = express();
 // Middlewares globales
 app.use(express.json());
 
-// Documentación Swagger (Carga segura mediante ruta absoluta)
+// Documentación Swagger con lectura directa y segura
 try {
-    const rutaSwagger = path.join(__dirname, 'swagger.yaml');
-    const documentacion = YAML.load(rutaSwagger);
+    const swaggerPath = path.join(__dirname, 'swagger.yaml');
+    const fileContent = fs.readFileSync(swaggerPath, 'utf8');
+    const documentacion = YAML.parse(fileContent);
     app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(documentacion));
+    console.log('Swagger cargado correctamente.');
 } catch (error) {
-    console.error('Error al cargar la documentación Swagger:', error.message);
+    console.error('Error detallado al cargar swagger.yaml:', error.message);
 }
 
 // Ruta raíz de prueba
@@ -38,17 +41,14 @@ const rutasAutores = require('./routes/autores');
 const rutasLibros = require('./routes/libros');
 const rutasPrestamos = require('./routes/prestamos');
 
-// Registrar rutas de la API
 app.use('/api/autores', rutasAutores);
 app.use('/api/libros', rutasLibros);
 app.use('/api/prestamos', autenticar, rutasPrestamos);
 
-// Middleware central de errores (SIEMPRE al final)
+// Middleware central de errores
 app.use(manejadorErrores);
 
-// Configuración de servidor para Render ('0.0.0.0' y puerto dinámico)
 const puerto = process.env.PORT || process.env.PUERTO || 3000;
 app.listen(puerto, '0.0.0.0', () => {
-    console.log(`Servidor en ejecución en puerto ${puerto}`);
-    console.log(`Documentación Swagger en /api-docs`);
+    console.log(`Servidor escuchando en puerto ${puerto}`);
 });
